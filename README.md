@@ -3,6 +3,8 @@
 I used https://github.com/parsonsmatt/servant-persistent as the template for
 this project.
 
+May also use ideas presented here:
+http://hbtvl.banquise.net/posts/2015-06-28-servantintegration.html
 
 [Servant](https://haskell-servant.github.io/) is an awesome Haskell library for writing web APIs. It uses the type system in a way that can only be described as magic to generate type safe routes as well as clients.
 
@@ -34,7 +36,7 @@ These steps work on Ubuntu:
 $ apt install postgres libpq-dev
 $ sudo -u postgres createuser -se test
 $ sudo -u postgres psql -c "alter role test with password 'test'"
-$ sudo -u postgres psql -c "create database perservant"
+$ sudo -u postgres psql -c "create database airport_service"
 ```
 
 These following steps worked on Arch Linux:
@@ -76,27 +78,27 @@ perservant=#
 
 ## The API:
 
-- GET `/users` returns a list of all users in the database
-- GET `/users/:name` returns the first user whose name is `:name`, and returns 404 if the user doesn't show up.
-- POST `/users` with JSON like `{ "name": "String", "email": "String" }` to create a User.
+- GET `/aircrafts` returns a list of all aircrafts in the database
+- GET `/aircrafts/:name` returns the first aircraft whose name is `:name`, and returns 404 if the aircraft doesn't show up.
+- POST `/aircrafts` with JSON like `{ "name": "String", "email": "String" }` to create a Aircraft.
 
 ### Playing with the API from the command line
 
 Once the compiled `perservant` binary is running, you can use `curl` like below to play with the API from the command line.
 
 ```
-# create a new user
+# create a new aircraft
 $ curl --verbose --request POST --header "Content-Type: application/json" \
-    --data '{"name": "foo", "email": "foo@foo.com"}' \
-	http://localhost:8081/users
+    --data '{"serialNumber": "SN1", "numEngines": 4}' \
+	http://localhost:8081/aircrafts
 
-# get all users in database
+# get all aircrafts in database
 $ curl --verbose --request GET --header "Content-Type: application/json" \
-	http://localhost:8081/users
+	http://localhost:8081/aircrafts
 
-# get certain user in database
+# get certain aircraft in database
 $ curl --verbose --request GET --header "Content-Type: application/json" \
-	http://localhost:8081/users/foo
+	http://localhost:8081/aircrafts/SN1
 ```
 
 ## src/Main.hs

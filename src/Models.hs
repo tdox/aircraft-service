@@ -23,9 +23,9 @@ import           GHC.Generics         (Generic)
 import           Config
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-User json
-    name String
-    email String
+ Aircraft json
+    serialNumber String
+    numEngines   Int
     deriving Show
 |]
 

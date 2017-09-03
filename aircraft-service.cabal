@@ -42,7 +42,7 @@ library
         Config
       , Models
       , Api
-      , Api.User
+      , Api.Aircraft
     build-depends: 
         base >= 4.7 && < 4.9
       , aeson
