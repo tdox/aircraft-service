@@ -1,12 +1,12 @@
-name:                servant-persistent
-version:             0.2.0.0
-synopsis:            Brief example on using persistent with servant
-description:         Brief example on using persistent with servant
+name:                aircraft-service
+version:             0.1.0.0
+synopsis:
+description:
 license:             MIT
 license-file:        LICENSE
-author:              Matt Parsons
-maintainer:          parsonsmatt@gmail.com
-copyright:           2016 Matt Parsons
+author:              
+maintainer:          
+copyright:           
 category:            Web
 build-type:          Simple
 cabal-version:       >=1.18
@@ -15,14 +15,14 @@ source-repository head
     type:
         git
     location:
-        https://www.github.com/parsonsmatt/servant-persistent
+        https://www.github.com/not_yet_there
 
-executable perservant
+executable aircraft-service
     main-is:
         Main.hs
     build-depends:
         base >=4.7 && <4.9
-      , servant-persistent 
+      , aircraft-service
       , persistent-postgresql
       , wai
       , warp

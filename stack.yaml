@@ -1,5 +1,5 @@
 flags:
-  servant-persistent: {}
+  aircraft-service: {}
 packages:
 - '.'
 extra-deps: []

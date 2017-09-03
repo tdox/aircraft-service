@@ -1,14 +1,13 @@
-# servant-persistent
+# aircraft-service
 
-[![Build Status](https://travis-ci.org/parsonsmatt/servant-persistent.svg?branch=master)](https://travis-ci.org/parsonsmatt/servant-persistent)
+I used https://github.com/parsonsmatt/servant-persistent as the template for
+this project.
+
 
 [Servant](https://haskell-servant.github.io/) is an awesome Haskell library for writing web APIs. It uses the type system in a way that can only be described as magic to generate type safe routes as well as clients.
 
 [Persistent](http://www.yesodweb.com/book/persistent) is another awesome Haskell library for querying databases. It manages migrations, your schema, and querying to make data transactions mostly painless.
 
-For some reason, no one had created an example on how to use these guys together. I put together this minimal example to show an example implementation, along with some resource management and basic error handling.
-
-I wrote a [blog post](http://www.parsonsmatt.org/2015/06/07/servant-persistent.html) that goes into a bit more detail, as well as having some exercises to work on.
 
 ## Requirements:
 
