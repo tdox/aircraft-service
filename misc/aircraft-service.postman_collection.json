@@ -1,0 +1,73 @@
+{
+	"variables": [],
+	"info": {
+		"name": "aircraft-service",
+		"_postman_id": "e69659e7-0129-64b0-ab72-7c2712aad3bb",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8081/aircrafts",
+			"request": {
+				"url": "http://localhost:8081/aircrafts",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircrafts/SN1",
+			"request": {
+				"url": "http://localhost:8081/aircrafts/SN1",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircrafts",
+			"request": {
+				"url": "http://localhost:8081/aircrafts",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"serialNumber\" : \"SN1\", \"numEngines\" : 4}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/aircrafts/deleteAll",
+			"request": {
+				"url": "http://localhost:8081/aircrafts/deleteAll",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

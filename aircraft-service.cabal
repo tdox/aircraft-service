@@ -62,7 +62,7 @@ library
       , warp
 
 
-test-suite servant-persistent-test
+test-suite aircraft-service-test
     type:
         exitcode-stdio-1.0
     hs-source-dirs:
@@ -73,7 +73,7 @@ test-suite servant-persistent-test
         ApiSpec
     build-depends:
         base
-      , servant-persistent
+      , aircraft-service
       , QuickCheck
       , hspec
     ghc-options:

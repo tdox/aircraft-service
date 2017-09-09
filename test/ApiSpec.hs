@@ -1,7 +1,7 @@
 module ApiSpec where
 
-import Test.Hspec
-import Test.QuickCheck
+import Test.Hspec (Spec, describe, it, shouldBe)
+import Test.QuickCheck (property)
 
 spec :: Spec
 spec = do

@@ -6,8 +6,11 @@ import           System.Environment          (lookupEnv)
 
 import           Api                         (app)
 import           Api.Aircraft                (generateJavaScript)
-import           Config                      (Config (..), Environment (..),
-                                              makePool, setLogger)
+
+import           Config                      ( Config(Config, getEnv, getPool)
+                                             , Environment(Localhost)
+                                             , makePool, setLogger)
+                 
 import           Models                      (doMigrations)
 import           Safe                        (readMay)
 
@@ -16,11 +19,13 @@ import           Safe                        (readMay)
 -- initializes the application.
 main :: IO ()
 main = do
-    env  <- lookupSetting "ENV" Development
+    env  <- lookupSetting "ENV" Localhost
     port <- lookupSetting "PORT" 8081
     pool <- makePool env
+    
     let cfg = Config { getPool = pool, getEnv = env }
         logger = setLogger env
+        
     runSqlPool doMigrations pool
     generateJavaScript
     run port $ logger $ app cfg

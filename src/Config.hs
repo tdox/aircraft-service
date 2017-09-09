@@ -44,14 +44,17 @@ data Config
 -- | Right now, we're distinguishing between three environments. We could
 -- also add a @Staging@ environment if we needed to.
 data Environment
-    = Development
+    = Localhost
+    | Development
     | Test
+    | Staging
     | Production
     deriving (Eq, Show, Read)
 
 -- | This returns a 'Middleware' based on the environment that we're in.
 setLogger :: Environment -> Middleware
 setLogger Test = id
+setLogger Localhost = logStdoutDev
 setLogger Development = logStdoutDev
 setLogger Production = logStdout
 
@@ -63,8 +66,13 @@ setLogger Production = logStdout
 makePool :: Environment -> IO ConnectionPool
 makePool Test =
     runNoLoggingT (createPostgresqlPool (connStr "test") (envPool Test))
+    
 makePool Development =
     runStdoutLoggingT (createPostgresqlPool (connStr "") (envPool Development))
+    
+makePool Localhost =
+    runStdoutLoggingT (createPostgresqlPool (connStr "") (envPool Localhost))
+    
 makePool Production = do
     -- This function makes heavy use of the 'MaybeT' monad transformer, which
     -- might be confusing if you're not familiar with it. It allows us to
@@ -80,6 +88,7 @@ makePool Production = do
                    , "password="
                    , "dbname="
                    ]
+                   
             envs = [ "PGHOST"
                    , "PGPORT"
                    , "PGUSER"
@@ -89,18 +98,21 @@ makePool Production = do
         envVars <- traverse (MaybeT . lookupEnv) envs
         let prodStr = mconcat . zipWith (<>) keys $ BS.pack <$> envVars
         runStdoutLoggingT $ createPostgresqlPool prodStr (envPool Production)
+        
     case pool of
         -- If we don't have a correct database configuration, we can't
         -- handle that in the program, so we throw an IO exception. This is
         -- one example where using an exception is preferable to 'Maybe' or
         -- 'Either'.
          Nothing -> throwIO (userError "Database Configuration not present in environment.")
+         
          Just a -> return a
 
 -- | The number of pools to use for a given environment.
 envPool :: Environment -> Int
 envPool Test = 1
 envPool Development = 1
+envPool Localhost = 1
 envPool Production = 8
 
 -- | A basic 'ConnectionString' for local/test development. Pass in either

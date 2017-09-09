@@ -1,0 +1,8 @@
+Notes
+
+Reference code:
+
+https://github.com/parsonsmatt/servant-persistent
+http://hbtvl.banquise.net/posts/2015-06-28-servantintegration.html
+https://github.com/gonimo/gonimo
+
