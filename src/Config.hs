@@ -1,7 +1,11 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings          #-}
 
 module Config where
+
+-- base
+import GHC.Generics (Generic)
 
 import           Control.Exception                    (throwIO)
 import           Control.Monad.Except                 (ExceptT, MonadError)
@@ -20,6 +24,16 @@ import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import           Servant                              (ServantErr)
 import           System.Environment                   (lookupEnv)
 
+
+-- aeson
+import Data.Aeson (FromJSON)
+
+-- text
+import Data.Text (Text)
+
+-- yaml
+-- import Data.Yaml (fromJSON)
+
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
 -- access to the application configuration using the 'MonadReader'
@@ -32,6 +46,16 @@ newtype App a
     { runApp :: ReaderT Config (ExceptT ServantErr IO) a
     } deriving ( Functor, Applicative, Monad, MonadReader Config,
                  MonadError ServantErr, MonadIO)
+
+data ServerConfig = ServerConfig { env :: Text
+                                 , port :: Int
+                                 } deriving (Generic, Show)
+
+instance FromJSON ServerConfig
+
+data AppConfig = AppConfig {server :: ServerConfig} deriving (Generic, Show)
+
+instance FromJSON AppConfig
 
 -- | The Config for our application is (for now) the 'Environment' we're
 -- running in and a Persistent 'ConnectionPool'.
@@ -50,6 +74,16 @@ data Environment
     | Staging
     | Production
     deriving (Eq, Show, Read)
+
+readEnv :: Text -> Environment
+readEnv txt =
+  case txt of
+    "localhost" -> Localhost
+    "dev"       -> Development
+    "test"      -> Test
+    "stage"     -> Staging
+    "prod"      -> Production
+    
 
 -- | This returns a 'Middleware' based on the environment that we're in.
 setLogger :: Environment -> Middleware

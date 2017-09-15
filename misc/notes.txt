@@ -6,3 +6,8 @@ https://github.com/parsonsmatt/servant-persistent
 http://hbtvl.banquise.net/posts/2015-06-28-servantintegration.html
 https://github.com/gonimo/gonimo
 
+
+Configuration
+ https://hackage.haskell.org/package/yaml-config-0.4.0/docs/Data-Yaml-Config.html
+
+http://lenguyenthedat.blogspot.com/2014/01/parsing-config-file-in-haskell-with-yaml.html
