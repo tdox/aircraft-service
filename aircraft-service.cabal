@@ -23,15 +23,8 @@ executable aircraft-service
     build-depends:
                   base >=4.7 && <4.9
                 , aircraft-service
-                , bytestring
-                , directory
-                , persistent-postgresql
-                , wai
-                , warp
-                , monad-logger
-                , safe
-                , text
-                , yaml
+
+
     hs-source-dirs:
         app   
     default-language:
@@ -43,21 +36,24 @@ library
     hs-source-dirs:
         src
     exposed-modules:
-        Config
-      , Models
-      , Api
-      , Api.Aircraft
+                    Config
+                  , Db
+                  , Ios
+                  , Models
+                  , Api
+                  , Api.Aircraft
     build-depends: 
                    base >= 4.7 && < 4.9
                  , aeson
                  , bytestring
-              --   , directory
+                 , directory
                  , monad-control
                  , monad-logger
                  , mtl
                  , persistent
                  , persistent-postgresql
                  , persistent-template
+                 , safe
                  , servant >= 0.7 && < 0.8
                  , servant-js >= 0.7 && < 0.8
                  , servant-server >= 0.7 && < 0.8

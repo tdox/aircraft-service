@@ -14,20 +14,27 @@ import           Database.Persist.Postgresql (Entity(..), Filter, deleteWhere
                                              , selectFirst, selectList, (==.))
 
 import           Network.Wai                 (Application)
+
 import           Servant                     ( (:>), (:<|>)((:<|>)), Capture
                                              , DeleteNoContent, Get
-                                             , JSON, Post, Proxy(Proxy), NoContent(..), ReqBody
+                                             , JSON, Post, Proxy(Proxy)
+                                             , NoContent(..), ReqBody
                                              , ServerT, err404, throwError)
+                 
 import           Servant.JS                  ( vanillaJS, writeJSForAPI)
 
 import           Config                      ( App, Config(getEnv)
                                              , Environment(Localhost))
+
+import Db (runDb)
                  
 import           Models                      ( Aircraft(Aircraft
                                                        , aircraftSerialNumber
                                                        , aircraftNumEngines)
-                                             , runDb)
+                                             )
 import qualified Models  as M
+
+--------------------------------------------------------------------------------
 
 type AircraftAPI =
          "aircrafts" :> Get '[JSON] [Entity Aircraft]
@@ -61,8 +68,8 @@ singleAircraft str = do
 -- | Creates an aircraft in the database.
 createAircraft :: Aircraft -> App Int64
 createAircraft ac = do
-    newAircraft <- runDb $ insert $ Aircraft (aircraftSerialNumber ac)
-                                             (aircraftNumEngines ac)
+    newAircraft <- runDb $ insert ac -- Aircraft (aircraftSerialNumber ac)
+                                                -- (aircraftNumEngines ac)
     return $ fromSqlKey newAircraft
 
 
