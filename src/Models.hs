@@ -8,6 +8,7 @@
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE StandaloneDeriving         #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
@@ -33,6 +34,8 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
     numEngines   Int
     deriving Show
 |]
+
+deriving instance Eq Aircraft
 
   {-
 doMigrations :: SqlPersistT IO ()

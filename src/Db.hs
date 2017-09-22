@@ -8,6 +8,7 @@
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
@@ -15,8 +16,10 @@ module Db where
 
 import           Control.Monad.Reader (MonadIO, MonadReader, asks, liftIO)
 import           Data.Aeson           (FromJSON, ToJSON)
+import           Database.Persist.Class (Key, selectList)
 import           Database.Persist.Class (deleteWhere, insert)
 import           Database.Persist.Sql (SqlPersistT, runMigration, runSqlPool)
+import           Database.Persist.Types (Entity)
 
 import           Database.Persist.TH  (mkMigrate, mkPersist, persistLowerCase,
                                        share, sqlSettings)
@@ -43,3 +46,11 @@ deleteAllAircraft = deleteWhere ([] :: [Filter Aircraft])
   
 insertAircraft :: Aircraft -> SqlPersistT IO AircraftId
 insertAircraft ac = insert ac
+
+countAircraft :: SqlPersistT IO Int
+countAircraft = do
+  (acs :: [Entity Aircraft]) <- selectList [] []
+  return $ length acs
+
+allAircrafts :: SqlPersistT IO [Entity Aircraft]
+allAircrafts = selectList [] []

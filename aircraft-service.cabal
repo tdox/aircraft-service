@@ -45,6 +45,7 @@ library
     build-depends: 
                    base >= 4.7 && < 4.9
                  , aeson
+                 , assert
                  , bytestring
                  , directory
                  , monad-control
