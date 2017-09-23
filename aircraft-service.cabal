@@ -76,10 +76,11 @@ test-suite aircraft-service-test
     other-modules:
         ApiSpec
     build-depends:
-        base
-      , aircraft-service
-      , QuickCheck
-      , hspec
+                  base
+                , aircraft-service
+                , QuickCheck
+                , hspec
+                , persistent-postgresql
     ghc-options:
         -threaded -rtsopts -with-rtsopts=-N
     default-language:
