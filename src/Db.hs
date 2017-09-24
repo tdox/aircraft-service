@@ -14,10 +14,15 @@
 
 module Db where
 
-import           Control.Monad.Reader (MonadIO, MonadReader, asks, liftIO, runReaderT)
+import           Control.Monad.Reader (MonadIO, MonadReader, ReaderT, asks
+                                      , liftIO
+                                      , runReaderT)
+
+import Control.Monad.Reader.Class (ask)
+                 
 import           Data.Aeson           (FromJSON, ToJSON)
-import           Database.Persist.Class (Key, selectList)
-import           Database.Persist.Class (deleteWhere, insert)
+import           Database.Persist.Class (Key, get, selectList)
+import           Database.Persist.Class (count, deleteWhere, insert)
 import           Database.Persist.Sql (SqlPersistT, runMigration, runSqlPool)
 import           Database.Persist.Types (Entity)
 
@@ -33,7 +38,8 @@ import Database.Persist.Types (Filter)
                  
 import           GHC.Generics         (Generic)
 
-import           Config               (Config, Environment(..), getPool, makePool)
+import           Config               (Config, Environment(..), getPool
+                                      , makePool)
 
 import Models
 
@@ -53,34 +59,37 @@ runDb query = do
 deleteAllAircraft :: SqlPersistT IO ()
 deleteAllAircraft = deleteWhere ([] :: [Filter Aircraft])
 
-deleteAllAircraftIO :: IO ()
-deleteAllAircraftIO = do
-  pool <- makePool Localhost
-  runSqlPool deleteAllAircraft pool
-  
+deleteAllAircraftIO :: ConnectionPool -> IO ()
+deleteAllAircraftIO pool = runSqlPool deleteAllAircraft pool
+
+
 insertAircraft :: Aircraft -> SqlPersistT IO AircraftId
 insertAircraft ac = insert ac
 
-insertAircraftIO :: Aircraft -> IO AircraftId
-insertAircraftIO ac = do
-  pool <- makePool Localhost
-  runSqlPool (insertAircraft ac) pool
+insertAircraftIO :: ConnectionPool -> Aircraft -> IO AircraftId
+insertAircraftIO pool ac = runSqlPool (insertAircraft ac) pool
+
 
 countAircraft :: SqlPersistT IO Int
-countAircraft = do
-  (acs :: [Entity Aircraft]) <- selectList [] []
-  return $ length acs
+countAircraft = count ([] :: [Filter Aircraft])
 
-countAircraftIO :: IO Int
-countAircraftIO = do
-  pool <- makePool Localhost
-  runSqlPool countAircraft pool
+countAircraftIO :: ConnectionPool -> IO Int
+countAircraftIO pool = runSqlPool countAircraft pool
   
 
 allAircrafts :: SqlPersistT IO [Entity Aircraft]
 allAircrafts = selectList [] []
 
-allAircraftsIO :: IO [Entity Aircraft]
-allAircraftsIO = do
-  pool <- makePool Localhost
-  runSqlPool allAircrafts pool
+allAircraftsIO :: ConnectionPool -> IO [Entity Aircraft]
+allAircraftsIO pool = runSqlPool allAircrafts pool
+
+
+getAircraft :: AircraftId -> SqlPersistT IO (Maybe Aircraft)
+getAircraft iD = get iD
+
+
+getAircraftIO :: ConnectionPool
+              -> AircraftId
+              -> IO (Maybe (Aircraft))
+getAircraftIO pool iD = runSqlPool (getAircraft iD) pool
+                                      

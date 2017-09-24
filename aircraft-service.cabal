@@ -70,11 +70,12 @@ test-suite aircraft-service-test
     type:
         exitcode-stdio-1.0
     hs-source-dirs:
-        test
+                   test
     main-is:
-        Spec.hs
+            Spec.hs
     other-modules:
-        ApiSpec
+                  ApiSpec
+                  DbSpec
     build-depends:
                   base
                 , aircraft-service

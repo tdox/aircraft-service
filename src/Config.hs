@@ -46,9 +46,10 @@ newtype App a
     { runApp :: ReaderT Config (ExceptT ServantErr IO) a
     } deriving ( Functor, Applicative, Monad, MonadReader Config,
                  MonadError ServantErr, MonadIO)
+type Port = Int
 
 data ServerConfig = ServerConfig { env :: Text
-                                 , port :: Int
+                                 , port :: Port
                                  } deriving (Generic, Show)
 
 instance FromJSON ServerConfig
@@ -63,6 +64,7 @@ data Config
     = Config
     { getPool :: ConnectionPool
     , getEnv  :: Environment
+    , cPort   :: Port
     }
 
 -- | Right now, we're distinguishing between three environments. We could
