@@ -21,8 +21,10 @@ import           Control.Monad.Reader (MonadIO, MonadReader, ReaderT, asks
 import Control.Monad.Reader.Class (ask)
                  
 import           Data.Aeson           (FromJSON, ToJSON)
-import           Database.Persist.Class (Key, get, selectList)
-import           Database.Persist.Class (count, deleteWhere, insert)
+
+import           Database.Persist.Class (Key, count, deleteWhere, delete, get
+                                        , insert, replace, selectList)
+
 import           Database.Persist.Sql (SqlPersistT, runMigration, runSqlPool)
 import           Database.Persist.Types (Entity)
 
@@ -93,3 +95,14 @@ getAircraftIO :: ConnectionPool
               -> IO (Maybe (Aircraft))
 getAircraftIO pool iD = runSqlPool (getAircraft iD) pool
                                       
+deleteAircraft :: AircraftId -> SqlPersistT IO ()
+deleteAircraft iD = delete iD
+
+deleteAircraftIO :: ConnectionPool -> AircraftId -> IO ()
+deleteAircraftIO pool acId = runSqlPool (deleteAircraft acId) pool
+
+replaceAircraft :: AircraftId -> Aircraft -> SqlPersistT IO ()
+replaceAircraft acId ac = replace acId ac
+
+replaceAircraftIO :: ConnectionPool -> AircraftId -> Aircraft -> IO ()
+replaceAircraftIO pool acId ac = runSqlPool (replaceAircraft acId ac) pool

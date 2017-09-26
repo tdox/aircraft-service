@@ -5,7 +5,7 @@ Reference code:
 https://github.com/parsonsmatt/servant-persistent
 http://hbtvl.banquise.net/posts/2015-06-28-servantintegration.html
 https://github.com/gonimo/gonimo
-
+https://github.com/haskell-servant/example-servant-minimal
 
 Configuration
  https://hackage.haskell.org/package/yaml-config-0.4.0/docs/Data-Yaml-Config.html

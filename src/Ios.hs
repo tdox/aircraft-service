@@ -41,31 +41,6 @@ import Config
 io1 :: IO ()
 io1 = do
 
-  {-
-  currDir <- getCurrentDirectory
-  putStrLn $ "currDir: " <> currDir
-
-  appConfigBS <- BS.readFile "config/application.yml"
-  let appConfig = either throw id $ decodeEither' appConfigBS :: AppConfig
-
-  putStrLn $ "appConfig: " ++ (show appConfig)
-
-  let
-    serverSettings = server appConfig
-    defaultPort = port serverSettings
-
-    defaultEnv = readEnv $ env serverSettings :: Environment
-  
-  
-  env  <- lookupSetting "ENV" defaultEnv
-  port <- lookupSetting "PORT" defaultPort
-  pool <- makePool env
-
-    
-  --let -- cfg = Config { getPool = pool, getEnv = env }
-  --    logger = setLogger env
--}
-
   (cfg :: Config) <- readConfig
   
   let

@@ -23,6 +23,7 @@ spec = do
   let
     ac1 = Aircraft "SN1" 4
     ac2 = Aircraft "SN2" 2
+    ac3 = Aircraft "SN3" 1
   (pool :: ConnectionPool)  <- runIO $ do
     cfg <- readConfig
     let pool = getPool cfg
@@ -50,3 +51,20 @@ spec = do
 
         mac <- getAircraftIO pool $ toSqlKey 99999
         mac `shouldBe` Nothing
+
+      it "insertThenDelete" $ do
+        id1 <- insertAircraftIO pool ac1
+        id2 <- insertAircraftIO pool ac2
+        deleteAircraftIO pool id2
+        nAc <- countAircraftIO pool
+        nAc `shouldBe` 1
+        mac <- getAircraftIO pool id2
+        mac `shouldBe` Nothing
+        Just ac1' <- getAircraftIO pool id1
+        ac1' `shouldBe` ac1
+        replaceAircraftIO pool id1 ac3
+        Just ac1'' <- getAircraftIO pool id1
+        ac1'' `shouldBe` ac3
+        
+        
+        
