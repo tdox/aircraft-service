@@ -48,6 +48,7 @@ library
                  , assert
                  , bytestring
                  , directory
+                 , http-client
                  , monad-control
                  , monad-logger
                  , mtl
@@ -58,6 +59,7 @@ library
                  , servant >= 0.7 && < 0.8
                  , servant-js >= 0.7 && < 0.8
                  , servant-server >= 0.7 && < 0.8
+                 , servant-client
                  , text           
                  , transformers
                  , wai

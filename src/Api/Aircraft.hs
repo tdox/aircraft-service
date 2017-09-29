@@ -20,6 +20,8 @@ import           Servant                     ( (:>), (:<|>)((:<|>)), Capture
                                              , JSON, Post, Proxy(Proxy)
                                              , NoContent(..), ReqBody
                                              , ServerT, err404, throwError)
+
+-- import Servant.Client
                  
 import           Servant.JS                  ( vanillaJS, writeJSForAPI)
 
