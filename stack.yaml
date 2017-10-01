@@ -4,5 +4,9 @@ packages:
 - '.'
 extra-deps:
 - assert-0.0.1.2
+# - intero-0.1.23
 
-resolver: lts-6.4
+# resolver: lts-6.4
+resolver: lts-6.35
+# resolver: lts-7.24
+# resolver: lts-9.6

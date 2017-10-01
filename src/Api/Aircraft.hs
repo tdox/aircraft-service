@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeOperators              #-}
 
 module Api.Aircraft where
@@ -8,10 +9,10 @@ import Control.Monad.IO.Class (liftIO)
 import           Control.Monad.Reader        (ReaderT, ask, runReaderT)
 import           Data.Int                    (Int64)
 
-import           Database.Persist.Postgresql (Entity(..), Filter, deleteWhere
-                                             , fromSqlKey
+import           Database.Persist.Postgresql (Entity(..), Key, Filter, deleteWhere
+                                             , fromSqlKey, get
                                              , insert
-                                             , selectFirst, selectList, (==.))
+                                             , selectFirst, selectList, toSqlKey, (==.))
 
 import           Network.Wai                 (Application)
 
@@ -40,7 +41,7 @@ import qualified Models  as M
 
 type AircraftAPI =
          "aircrafts" :> Get '[JSON] [Entity Aircraft]
-    :<|> "aircrafts" :> Capture "name" String :> Get '[JSON] (Entity Aircraft)
+    :<|> "aircrafts" :> Capture "id" Int64 :> Get '[JSON] Aircraft
     :<|> "aircrafts" :> ReqBody '[JSON] Aircraft :> Post '[JSON] Int64
     :<|> "aircrafts" :> "deleteAll" :> DeleteNoContent '[JSON] NoContent
 
@@ -57,8 +58,17 @@ allAircrafts =
     runDb (selectList [] [])
 
 -- | Returns an aircraft by serialNumber or throws a 404 error.
-singleAircraft :: String -> App (Entity Aircraft)
-singleAircraft str = do
+singleAircraft :: Int64 -> App Aircraft
+singleAircraft idInt = do
+    let (key :: Key Aircraft) = toSqlKey idInt
+    maybeAircraft <- runDb (get key)
+    case maybeAircraft of
+         Nothing -> throwError err404
+         Just ac -> return ac
+
+-- | Returns an aircraft by serialNumber or throws a 404 error.
+aircraftBySerialNumber :: String -> App (Entity Aircraft)
+aircraftBySerialNumber str = do
     maybeAircraft <- runDb (selectFirst [M.AircraftSerialNumber ==. str] [])
     case maybeAircraft of
          Nothing ->

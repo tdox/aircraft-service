@@ -99,3 +99,6 @@ readConfig = do
 
   return cfg
   
+readPort :: IO Int
+readPort = cPort <$> readConfig
+

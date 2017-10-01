@@ -21,7 +21,7 @@ executable aircraft-service
     main-is:
         Main.hs
     build-depends:
-                  base >=4.7 && <4.9
+                  base
                 , aircraft-service
 
 
@@ -40,14 +40,17 @@ library
                   , Db
                   , Ios
                   , Models
+                  , Scratch
                   , Api
                   , Api.Aircraft
     build-depends: 
-                   base >= 4.7 && < 4.9
+                   base
                  , aeson
                  , assert
+                 , async
                  , bytestring
                  , directory
+                 , exceptions
                  , http-client
                  , monad-control
                  , monad-logger
@@ -56,9 +59,9 @@ library
                  , persistent-postgresql
                  , persistent-template
                  , safe
-                 , servant >= 0.7 && < 0.8
-                 , servant-js >= 0.7 && < 0.8
-                 , servant-server >= 0.7 && < 0.8
+                 , servant
+                 , servant-js
+                 , servant-server
                  , servant-client
                  , text           
                  , transformers
@@ -83,6 +86,7 @@ test-suite aircraft-service-test
                 , aircraft-service
                 , QuickCheck
                 , hspec
+                , persistent
                 , persistent-postgresql
     ghc-options:
         -threaded -rtsopts -with-rtsopts=-N

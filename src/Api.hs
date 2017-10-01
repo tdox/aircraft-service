@@ -11,10 +11,10 @@ import           Data.Int                    (Int64)
 import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
                                               selectFirst, selectList, (==.))
 import           Network.Wai                 (Application)
-import           Servant                     ((:<|>)((:<|>)), (:~>)(Nat)
+import           Servant      {-               ((:<|>)((:<|>)), (:~>)(Nat)
                                              , Proxy(Proxy) , Raw, Server
                                              , ServantErr, enter, serve
-                                             , serveDirectory)
+                                             , serveDirectory) -}
 
 import           Config                      (App (..), Config (..))
 import           Models
