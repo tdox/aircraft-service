@@ -103,7 +103,7 @@ io3 = do
 
 io3 :: IO ()
 io3 = do
-  tid <- forkIO Ios.io1
+  tid <- forkIO Ios.runService
   threadDelay 100000
   io2
   killThread tid

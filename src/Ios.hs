@@ -38,8 +38,8 @@ import Config
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
-io1 :: IO ()
-io1 = do
+runService :: IO ()
+runService = do
 
   (cfg :: Config) <- readConfig
   
@@ -48,7 +48,6 @@ io1 = do
     pool = getPool cfg :: ConnectionPool
     port = cPort cfg
     
-        
   runSqlPool doMigrations pool
   generateJavaScript
   run port $ logger $ app cfg
