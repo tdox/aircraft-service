@@ -9,10 +9,12 @@ import Control.Monad.IO.Class (liftIO)
 import           Control.Monad.Reader        (ReaderT, ask, runReaderT)
 import           Data.Int                    (Int64)
 
-import           Database.Persist.Postgresql (Entity(..), Key, Filter, deleteWhere
+import           Database.Persist.Postgresql (Entity(..), Key, Filter
+                                             , deleteWhere
                                              , fromSqlKey, get
                                              , insert
-                                             , selectFirst, selectList, toSqlKey, (==.))
+                                             , selectFirst, selectList
+                                             , toSqlKey, (==.))
 
 import           Network.Wai                 (Application)
 
@@ -22,7 +24,6 @@ import           Servant                     ( (:>), (:<|>)((:<|>)), Capture
                                              , NoContent(..), ReqBody
                                              , ServerT, err404, throwError)
 
--- import Servant.Client
                  
 import           Servant.JS                  ( vanillaJS, writeJSForAPI)
 
@@ -80,8 +81,7 @@ aircraftBySerialNumber str = do
 -- | Creates an aircraft in the database.
 createAircraft :: Aircraft -> App Int64
 createAircraft ac = do
-    newAircraft <- runDb $ insert ac -- Aircraft (aircraftSerialNumber ac)
-                                                -- (aircraftNumEngines ac)
+    newAircraft <- runDb $ insert ac
     return $ fromSqlKey newAircraft
 
 
@@ -92,7 +92,7 @@ deleteAllAircraft = do
   conf <- ask
   case getEnv conf of
     Localhost -> do
-      runDb $ deleteWhere  {- NoContent -- -} ([] :: [Filter Aircraft])
+      runDb $ deleteWhere ([] :: [Filter Aircraft])
       return NoContent
     _ -> return NoContent
 

@@ -143,8 +143,6 @@ spec3 = do
   runIO $ threadDelay 100000  
   describe "write then read some data" $ do
     it "write one aircraft" $ do
---      tid <- forkIO Ios.runService
---      threadDelay 100000
       mgr <- newManager defaultManagerSettings
       port <- readPort
       let bu = BaseUrl Http "localhost" port ""
@@ -160,3 +158,23 @@ spec3 = do
 fromRight :: Either a b -> b
 fromRight (Right x) = x
 fromRight (Left _) = error "fromRight: is Left"
+
+{-
+-- notes
+hspec :: Spec -> IO ()
+hspec = undefined
+
+it :: (HasCallStack, Example a) => String -> a -> SpecWith (Arg a)
+it = undefined
+
+type Spec = SpecWith ()
+type SpecWith a = SpecM a ()
+
+newtype SpecM a r = SpecM (WriterT [SpecTree a] IO r)
+
+beforeAll :: IO a -> SpecWith a -> Spec
+beforeAll = undefined
+
+
+Spec = SpecWith () = SpecM () () = SpecM (WriterT [SpecTree ()] IO ())
+-}

@@ -54,9 +54,6 @@ runDb query = do
     pool <- asks getPool
     liftIO $ runSqlPool query pool
 
---runDbPool :: MonadIO m => SqlPersistT IO b -> ConnectionPool -> m b
---runDbPool query pool = runSqlPool query pool
-
 
 deleteAllAircraft :: SqlPersistT IO ()
 deleteAllAircraft = deleteWhere ([] :: [Filter Aircraft])
