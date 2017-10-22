@@ -10,6 +10,7 @@ import Network.HTTP.Client (Manager, defaultManagerSettings, newManager)
 
 -- persistent
 import Database.Persist.Types
+import Database.Persist.Postgresql (toSqlKey)
 
 -- servant-client
 import Servant.Client (BaseUrl(BaseUrl), ClientM, Scheme(Http), ServantError, client)
@@ -51,7 +52,7 @@ spec = do
       port <- readPort
       let bu = BaseUrl Http "localhost" port ""
 
-      let ac = Aircraft "SN1" 2
+      let ac = Aircraft "SN1" $ toSqlKey 1
       Right id1 <- postAircraftIO mgr bu ac
       eAc <- getAircraftIO mgr bu id1
       eAc `shouldBe` Right ac
@@ -65,9 +66,9 @@ spec = do
       port <- readPort
       let bu = BaseUrl Http "localhost" port ""
 
-      let ac1 = Aircraft "SN1" 2
+      let ac1 = Aircraft "SN1" $ toSqlKey 1
       Right id1 <- postAircraftIO mgr bu ac1
-      let ac2 = Aircraft "SN1" 2
+      let ac2 = Aircraft "SN1" $ toSqlKey 2
       Right id2 <- postAircraftIO mgr bu ac2
 
       eAc1 <- getAircraftIO mgr bu id1
@@ -125,7 +126,7 @@ spec2 = do
       port <- readPort
       let bu = BaseUrl Http "localhost" port ""
 
-      let ac = Aircraft "SN1" 2
+      let ac = Aircraft "SN1" $ toSqlKey 2
       Right id1 <- postAircraftIO mgr bu ac
       eAc <- getAircraftIO mgr bu id1
       eAc `shouldBe` Right ac
@@ -147,7 +148,7 @@ spec3 = do
       port <- readPort
       let bu = BaseUrl Http "localhost" port ""
 
-      let ac = Aircraft "SN1" 2
+      let ac = Aircraft "SN1" $ toSqlKey 2
       Right id1 <- postAircraftIO mgr bu ac
       eAc <- getAircraftIO mgr bu id1
       eAc `shouldBe` Right ac

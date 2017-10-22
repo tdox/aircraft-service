@@ -14,9 +14,7 @@
 
 module Models where
 
--- import           Control.Monad.Reader (MonadIO, MonadReader, asks, liftIO)
--- import           Data.Aeson           (FromJSON, ToJSON)
--- import           Database.Persist.Class (deleteWhere, insert)
+
 import           Database.Persist.Sql (SqlPersistT, runMigration, runSqlPool)
 
 import           Database.Persist.TH  (mkMigrate, mkPersist, persistLowerCase,
@@ -28,14 +26,59 @@ import           GHC.Generics         (Generic)
 
 import           Config               (Config, getPool)
 
+type OrgId = String
+
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
- Aircraft json
+  Aircraft json
     serialNumber String
-    numEngines   Int
+    modelId      ModelId
     deriving Show
+    
+  Model json
+    code         String
+    name         String
+    numEngines   Int
+    orgId        OrgId
+    deriving Show
+    
+  Specifications json
+    maxBaggageVolumeCuIn Int
+    maxBaggageLenghtIn   Int
+    deriving Show
+
+  AircraftSpecs json
+    aircraftId AircraftId
+    specsId    SpecificationsId
+    UniqueAircraftSpecs aircraftId specsId
+    deriving Show
+
+  OrganizationModelSpecs json
+    orgId    OrgId
+    modelId  ModelId
+    specsId  SpecificationsId
+--    UniqueOrganizationModelSpecs OrgId ModelId SpecificationsId
+    deriving Show
+
+  Performance json
+    cuiseMode                String
+    flightTimeMin            Int
+    timeDistanceSlopeNMPerHr Int
+    timeDistanceInterceptMin Int
+    specsId                  SpecificationsId
+--    UniquePerformance cruiseMode specsId
+    deriving Show
+
 |]
 
+
+
 deriving instance Eq Aircraft
+deriving instance Eq Model
+deriving instance Eq Specifications
+deriving instance Eq AircraftSpecs
+deriving instance Eq OrganizationModelSpecs
+deriving instance Eq Performance
+
 
   {-
 doMigrations :: SqlPersistT IO ()

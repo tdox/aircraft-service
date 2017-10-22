@@ -54,52 +54,101 @@ runDb query = do
     pool <- asks getPool
     liftIO $ runSqlPool query pool
 
+----------------------
 
-deleteAllAircraft :: SqlPersistT IO ()
-deleteAllAircraft = deleteWhere ([] :: [Filter Aircraft])
+getAllAircrafts :: SqlPersistT IO [Entity Aircraft]
+getAllAircrafts = selectList [] []
 
-deleteAllAircraftIO :: ConnectionPool -> IO ()
-deleteAllAircraftIO pool = runSqlPool deleteAllAircraft pool
-
-
-insertAircraft :: Aircraft -> SqlPersistT IO AircraftId
-insertAircraft ac = insert ac
-
-insertAircraftIO :: ConnectionPool -> Aircraft -> IO AircraftId
-insertAircraftIO pool ac = runSqlPool (insertAircraft ac) pool
-
+getAircraft :: AircraftId -> SqlPersistT IO (Maybe Aircraft)
+getAircraft = get
 
 countAircraft :: SqlPersistT IO Int
 countAircraft = count ([] :: [Filter Aircraft])
 
-countAircraftIO :: ConnectionPool -> IO Int
-countAircraftIO pool = runSqlPool countAircraft pool
-  
+insertAircraft :: Aircraft -> SqlPersistT IO AircraftId
+insertAircraft = insert
 
-allAircrafts :: SqlPersistT IO [Entity Aircraft]
-allAircrafts = selectList [] []
+replaceAircraft :: AircraftId -> Aircraft -> SqlPersistT IO ()
+replaceAircraft = replace
+
+deleteAllAircraft :: SqlPersistT IO ()
+deleteAllAircraft = deleteWhere ([] :: [Filter Aircraft])
+
+deleteAircraft :: AircraftId -> SqlPersistT IO ()
+deleteAircraft = delete
+
+
+----------------------
 
 allAircraftsIO :: ConnectionPool -> IO [Entity Aircraft]
-allAircraftsIO pool = runSqlPool allAircrafts pool
-
-
-getAircraft :: AircraftId -> SqlPersistT IO (Maybe Aircraft)
-getAircraft iD = get iD
-
+allAircraftsIO pool = runSqlPool getAllAircrafts pool
 
 getAircraftIO :: ConnectionPool
               -> AircraftId
               -> IO (Maybe (Aircraft))
 getAircraftIO pool iD = runSqlPool (getAircraft iD) pool
-                                      
-deleteAircraft :: AircraftId -> SqlPersistT IO ()
-deleteAircraft iD = delete iD
+
+
+countAircraftIO :: ConnectionPool -> IO Int
+countAircraftIO pool = runSqlPool countAircraft pool
+
+insertAircraftIO :: ConnectionPool -> Aircraft -> IO AircraftId
+insertAircraftIO pool ac = runSqlPool (insertAircraft ac) pool
+
+replaceAircraftIO :: ConnectionPool -> AircraftId -> Aircraft -> IO ()
+replaceAircraftIO pool acId ac = runSqlPool (replaceAircraft acId ac) pool
+
+deleteAllAircraftIO :: ConnectionPool -> IO ()
+deleteAllAircraftIO pool = runSqlPool deleteAllAircraft pool
 
 deleteAircraftIO :: ConnectionPool -> AircraftId -> IO ()
 deleteAircraftIO pool acId = runSqlPool (deleteAircraft acId) pool
 
-replaceAircraft :: AircraftId -> Aircraft -> SqlPersistT IO ()
-replaceAircraft acId ac = replace acId ac
 
-replaceAircraftIO :: ConnectionPool -> AircraftId -> Aircraft -> IO ()
-replaceAircraftIO pool acId ac = runSqlPool (replaceAircraft acId ac) pool
+
+--------------------------------------------------------------------------------
+
+data Crud ent entId = Crud {
+    cCetAll    :: SqlPersistT IO [Entity ent]
+  , cGet       :: entId -> SqlPersistT IO (Maybe ent)
+  , cCount     :: SqlPersistT IO Int
+  , cInsert    :: ent -> SqlPersistT IO entId
+  , cReplace   :: entId -> ent -> SqlPersistT IO ()
+  , cDeleteAll :: SqlPersistT IO ()
+  , cDelete    :: entId -> SqlPersistT IO ()
+  }
+
+acCrud :: Crud Aircraft AircraftId
+acCrud =
+  Crud (selectList [] [])
+       get
+       (count ([] :: [Filter Aircraft]))
+       insert
+       replace
+       (deleteWhere ([] :: [Filter Aircraft]))
+       delete
+
+
+modelCrud :: Crud Model ModelId
+modelCrud =
+  Crud (selectList [] [])
+       get
+       (count ([] :: [Filter Aircraft]))
+       insert
+       replace
+       (deleteWhere ([] :: [Filter Aircraft]))
+       delete
+
+
+
+{-
+aircraftCrud :: Crud Aircraft AircraftId
+aircraftCrud =
+  Crud allAircrafts
+       getAircraft
+       countAircraft
+       insertAircraft
+       replaceAircraft
+       deleteAllAircraft
+       deleteAircraft
+-}

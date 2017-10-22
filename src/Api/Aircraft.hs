@@ -34,7 +34,8 @@ import Db (runDb)
                  
 import           Models                      ( Aircraft(Aircraft
                                                        , aircraftSerialNumber
-                                                       , aircraftNumEngines)
+                                                       )
+                                                     -- , aircraftNumEngines)
                                              )
 import qualified Models  as M
 

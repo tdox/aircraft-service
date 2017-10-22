@@ -26,7 +26,11 @@ import Control.Monad.Except (ExceptT, runExceptT)
 -- import Control.Monad.Reader
 import Control.Monad.Reader (MonadIO, MonadReader, asks, liftIO)
 
-import Database.Persist.Postgresql (fromSqlKey, runSqlPool)
+-- persistent
+import Database.Persist (Filter, count, delete, deleteWhere, insert,
+                         replace, selectList)
+       
+import Database.Persist.Postgresql (fromSqlKey, runSqlPool, toSqlKey)
 
 
 import           Servant                     ( (:>), (:<|>)((:<|>)), Capture
@@ -52,7 +56,8 @@ io1 :: IO ()
 io1 = do
     putStrLn "io1"
     let
-      ac1 = Aircraft "SN1" 4
+      m1 = Model "m1Code" "m1Name" 2 "m1OrdId"
+      ac1 = Aircraft "SN1" $ toSqlKey 1
       
     pool <- makePool Localhost
       
@@ -65,7 +70,34 @@ io1 = do
       liftIO $ putStrLn $ "id1: " ++ show id1
       nAc <- Db.countAircraft
       liftIO $ putStrLn $ "nAc: " ++ show nAc
-      (acs :: [Entity Aircraft]) <- Db.allAircrafts 
+      (acs :: [Entity Aircraft]) <- Db.getAllAircrafts 
+      let ac2 = entityVal $ head $ acs :: Aircraft
+
+      when (ac2 /= ac1) $ do
+        liftIO $ putStrLn "error"
+
+      liftIO $ assert (ac1 == ac2) $ return ()
+
+io1a :: IO ()
+io1a = do
+    putStrLn "io1"
+    let
+      m1 = Model "m1Code" "m1Name" 2 "m1OrdId"
+      ac1 = Aircraft "SN1" $ toSqlKey 1
+      
+    pool <- makePool Localhost
+      
+    flip runSqlPool pool $ do
+      deleteWhere ([] :: [Filter Aircraft])
+      deleteWhere ([] :: [Filter Model])
+      nAc <- count ([] :: [Filter Aircraft])
+      liftIO $ putStrLn $ "nAc: " ++ show nAc
+      key1 <- insert ac1
+      let id1 = fromSqlKey key1
+      liftIO $ putStrLn $ "id1: " ++ show id1
+      nAc <- count ([] :: [Filter Aircraft])
+      liftIO $ putStrLn $ "nAc: " ++ show nAc
+      (acs :: [Entity Aircraft]) <- selectList [] []
       let ac2 = entityVal $ head $ acs :: Aircraft
 
       when (ac2 /= ac1) $ do
@@ -81,8 +113,9 @@ io2 = do
   port <- readPort
   let
     bu = BaseUrl Http "localhost" port ""
-    ac1 = Aircraft "SN1" 2
-    ac2 = Aircraft "SN2" 4
+    m1 = Model "m1Code" "m1Name" 2 "m1OrdId"
+    ac1 = Aircraft "SN1" $ toSqlKey 1
+    ac2 = Aircraft "SN2" $ toSqlKey 2
 
   mapM_ (postAircraftIO mgr bu) [ac1, ac2]
   eAcs <- getAllAircraftsIO mgr bu

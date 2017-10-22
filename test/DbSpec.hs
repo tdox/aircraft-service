@@ -21,9 +21,9 @@ import Models
 spec :: Spec
 spec = do
   let
-    ac1 = Aircraft "SN1" 4
-    ac2 = Aircraft "SN2" 2
-    ac3 = Aircraft "SN3" 1
+    ac1 = Aircraft "SN1" $ toSqlKey 1
+    ac2 = Aircraft "SN2" $ toSqlKey 2
+    ac3 = Aircraft "SN3" $ toSqlKey 3
   (pool :: ConnectionPool)  <- runIO $ do
     cfg <- readConfig
     let pool = getPool cfg
