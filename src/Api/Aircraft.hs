@@ -47,12 +47,14 @@ type AircraftAPI =
     :<|> "aircrafts" :> ReqBody '[JSON] Aircraft :> Post '[JSON] Int64
     :<|> "aircrafts" :> "deleteAll" :> DeleteNoContent '[JSON] NoContent
 
+
 -- | The server that runs the AircraftAPI
 aircraftServer :: ServerT AircraftAPI App
 aircraftServer = allAircrafts
             :<|> singleAircraft
             :<|> createAircraft
             :<|> deleteAllAircraft
+
 
 -- | Returns all aircrafts in the database.
 allAircrafts :: App [Entity Aircraft]

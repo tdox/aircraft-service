@@ -124,7 +124,7 @@ io2 = do
     Left err -> putStrLn $ "Error: " ++ show err
     Right acs -> putStrLn $ "acs: " ++ show acs
 
-  void $ deleteAllIO mgr bu
+  void $ deleteAllAircraftIO mgr bu
 
 {-
 io3 :: IO ()

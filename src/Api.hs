@@ -19,18 +19,25 @@ import           Servant      {-               ((:<|>)((:<|>)), (:~>)(Nat)
 import           Config                      (App (..), Config (..))
 import           Models
 
-import           Api.Aircraft
+import           Api.Aircraft (AircraftAPI, aircraftServer)
+import           Api.Model (ModelAPI, modelServer)
+
+type AppAPI = AircraftAPI :<|> ModelAPI
 
 -- | This is the function we export to run our 'AircraftAPI'. Given
 -- a 'Config', we return a WAI 'Application' which any WAI compliant server
 -- can run.
 aircraftApp :: Config -> Application
-aircraftApp cfg = serve (Proxy :: Proxy AircraftAPI) (appToServer cfg)
+--aircraftApp cfg = serve (Proxy :: Proxy AircraftAPI) (appToServer cfg)
+aircraftApp cfg = serve (Proxy :: Proxy AppAPI) (appToServer cfg)
+
+appServer :: ServerT AppAPI App
+appServer = aircraftServer :<|> modelServer
 
 -- | This functions tells Servant how to run the 'App' monad with our
 -- 'server' function.
-appToServer :: Config -> Server AircraftAPI
-appToServer cfg = enter (convertApp cfg) aircraftServer
+appToServer :: Config -> Server AppAPI -- AircraftAPI
+appToServer cfg = enter (convertApp cfg) appServer -- (aircraftServer :<|> modelServer)
 
 -- | This function converts our 'App' monad into the @ExceptT ServantErr
 -- IO@ monad that Servant's 'enter' function needs in order to run the
@@ -51,9 +58,10 @@ files = serveDirectory "assets"
 -- two different APIs and applications. This is a powerful tool for code
 -- reuse and abstraction! We need to put the 'Raw' endpoint last, since it
 -- always succeeds.
-type AppAPI = AircraftAPI :<|> Raw
+type AppAPI2 = AppAPI :<|> Raw
+--type AppAPI2 = AircraftAPI :<|> Raw
 
-appApi :: Proxy AppAPI
+appApi :: Proxy AppAPI2
 appApi = Proxy
 
 -- | Finally, this function takes a configuration and runs our 'AircraftAPI'

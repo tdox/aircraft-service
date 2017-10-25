@@ -8,6 +8,8 @@ import Data.IORef (newIORef, readIORef)
 -- http-client
 import Network.HTTP.Client (Manager, defaultManagerSettings, newManager)
 
+-- mtl
+import Control.Monad.Reader (liftIO, runReaderT)
 -- persistent
 import Database.Persist.Types
 import Database.Persist.Postgresql (toSqlKey)
@@ -24,9 +26,34 @@ import Ios
 import Models
 import qualified Models as M
 
-
 spec :: Spec
 spec = do
+  describe "write then read some data" $ do
+    it "write one aircraft" $ do
+      tid <- forkIO Ios.runService
+      threadDelay 100000
+      mgr <- newManager defaultManagerSettings
+      port <- readPort
+      let
+        bu = BaseUrl Http "localhost" port ""
+        cc = ClientEnv mgr bu
+
+      flip runReaderT cc $ do
+        let m = Model "modelCode" "modelName" 2 "orgId"
+        Right mId <- postModelC m
+        let ac = Aircraft "SN1" $ toSqlKey mId
+        Right acId <- postAircraftC ac
+        eAc <- getAircraftC acId
+        liftIO $ eAc `shouldBe` Right ac
+        deleteAllAircraftC
+        deleteAllModelsC
+        
+      killThread tid
+
+  
+
+spec4 :: Spec
+spec4 = do
   describe "Test suite works" $ do
 
     it "passes" $ do
@@ -56,7 +83,7 @@ spec = do
       Right id1 <- postAircraftIO mgr bu ac
       eAc <- getAircraftIO mgr bu id1
       eAc `shouldBe` Right ac
-      deleteAllIO mgr bu
+      deleteAllAircraftIO mgr bu
       killThread tid
 
     it "write two aircrafts" $ do
@@ -77,7 +104,7 @@ spec = do
       eAc2 `shouldBe` Right ac2
 
       
-      deleteAllIO mgr bu
+      deleteAllAircraftIO mgr bu
       killThread tid
 
       

@@ -44,6 +44,7 @@ library
                   , Scratch
                   , Api
                   , Api.Aircraft
+                  , Api.Model
     build-depends: 
                    base
                  , aeson
@@ -89,6 +90,7 @@ test-suite aircraft-service-test
                 , QuickCheck
                 , hspec
                 , http-client
+                , mtl
                 , persistent
                 , persistent-postgresql
                 , servant-client
