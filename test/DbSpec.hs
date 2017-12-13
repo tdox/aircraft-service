@@ -13,10 +13,12 @@ import Database.Persist.Postgresql (ConnectionPool, fromSqlKey
 import Test.Hspec (Spec, after_, describe, it, hspec, runIO, shouldBe)
 import Test.QuickCheck (property)
 
-import Config
-import Db
-import Ios
-import Models
+-- aircraft-service
+import Config (getPool)
+import Db (countAircraftIO, deleteAircraftIO, deleteAllAircraftIO, getAircraftIO
+          , insertAircraftIO, replaceAircraftIO)
+import Ios (readConfig)
+import Models (Aircraft(Aircraft))
 
 spec :: Spec
 spec = do
@@ -31,6 +33,11 @@ spec = do
     return pool
   after_ (deleteAllAircraftIO pool) $ do
     describe "Db tests" $ do
+
+      it "countAircraft" $ do
+        deleteAllAircraftIO pool
+        nAc <- countAircraftIO pool
+        nAc `shouldBe` 0
 
       it "insertOneAircraft" $ do
         id1 <- insertAircraftIO pool ac1

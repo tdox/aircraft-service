@@ -72,6 +72,8 @@ library
                  , warp
                  , yaml
 
+                 , hspec
+                 , QuickCheck
 
 test-suite aircraft-service-test
     type:

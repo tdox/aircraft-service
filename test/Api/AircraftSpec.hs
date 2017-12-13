@@ -13,10 +13,10 @@ import Database.Persist.Postgresql (ConnectionPool, fromSqlKey
 import Test.Hspec (Spec, after_, describe, it, hspec, runIO, shouldBe)
 import Test.QuickCheck (property)
 
-import Config
-import Db
-import Ios
-import Models
+-- import Config ()
+-- import Db ()
+-- import Ios
+import Models (Aircraft(Aircraft))
 
 spec :: Spec
 spec = do

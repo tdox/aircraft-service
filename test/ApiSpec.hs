@@ -21,9 +21,11 @@ import Servant.Client (BaseUrl(BaseUrl), ClientM, Scheme(Http), ServantError, cl
 import Test.Hspec (Spec, describe, it, hspec, runIO, shouldBe)
 import Test.QuickCheck (property)
 
-import Client
-import Ios
-import Models
+import Client (ClientEnv(ClientEnv), deleteAllAircraftC, deleteAllAircraftIO
+              , deleteAllModelsC
+              , getAircraftC, getAircraftIO, postAircraftC, postAircraftIO, postModelC )
+import Ios (readPort, runService)
+import Models (Aircraft(Aircraft), Model(Model))
 import qualified Models as M
 
 spec :: Spec
@@ -52,8 +54,8 @@ spec = do
 
   
 
-spec4 :: Spec
-spec4 = do
+--spec4 :: Spec
+--spec4 = do
   describe "Test suite works" $ do
 
     it "passes" $ do
