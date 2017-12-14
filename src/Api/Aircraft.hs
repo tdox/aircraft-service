@@ -48,6 +48,7 @@ type AircraftAPI =
     :<|> "aircrafts" :> "deleteAll" :> DeleteNoContent '[JSON] NoContent
 
 
+
 -- | The server that runs the AircraftAPI
 aircraftServer :: ServerT AircraftAPI App
 aircraftServer = allAircrafts

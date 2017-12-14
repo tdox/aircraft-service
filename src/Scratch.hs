@@ -3,14 +3,13 @@
 module Scratch where
 
 -- base
-import Control.Concurrent (forkIO, killThread, threadDelay)
-import Control.Monad (void, when)
-import Data.Int (Int64)
+import           Control.Concurrent          (forkIO, killThread, threadDelay)
+import           Control.Monad               (void, when)
 -- import GHC.Generics ()
 -- import Data.Proxy (Proxy(Proxy))
 
 -- assert
-import Control.Exception.Assert (assert)
+import           Control.Exception.Assert    (assert)
 
 -- async
 -- import Control.Concurrent.Async ()
@@ -19,38 +18,43 @@ import Control.Exception.Assert (assert)
 -- import Control.Monad.Catch ()
 
 -- http-client
-import Network.HTTP.Client (Manager, defaultManagerSettings, newManager)
+import           Network.HTTP.Client         (Manager, defaultManagerSettings,
+                                              newManager)
 
 -- mtl
-import Control.Monad.Except (ExceptT, runExceptT)
+import           Control.Monad.Except        (ExceptT, runExceptT)
 -- import Control.Monad.Reader
-import Control.Monad.Reader (MonadIO, MonadReader, asks, liftIO)
+import           Control.Monad.Reader        (MonadIO, MonadReader, asks,
+                                              liftIO)
 
 -- persistent
-import Database.Persist (Filter, count, delete, deleteWhere, insert,
-                         replace, selectList)
-       
-import Database.Persist.Postgresql (fromSqlKey, runSqlPool, toSqlKey)
+import           Database.Persist            (Filter, count, delete,
+                                              deleteWhere, insert, replace,
+                                              selectList)
+
+import           Database.Persist.Postgresql (fromSqlKey, runSqlPool, toSqlKey)
 
 
-import           Servant                     ( (:>), (:<|>)((:<|>)), Capture
-                                             , DeleteNoContent, Get
-                                             , JSON, Post, Proxy(Proxy)
-                                             , NoContent(..), ReqBody
-                                             , ServerT, err404, throwError)
+import           Servant                     ((:<|>) ((:<|>)), (:>), Capture,
+                                              DeleteNoContent, Get, JSON,
+                                              NoContent (..), Post,
+                                              Proxy (Proxy), ReqBody, ServerT,
+                                              err404, throwError)
 -- servant-client
-import Servant.Client (BaseUrl(BaseUrl), ClientM, Scheme(Http), ServantError, client)
+import           Servant.Client              (BaseUrl (BaseUrl), ClientM, ClientEnv(ClientEnv),
+                                              Scheme (Http), ServantError,
+                                              client, runClientM)
 
 
-import Client
-import Config
-import Models
+import           Client
+import           Config
+import           Database.Persist.Types      (Entity, entityVal)
 import qualified Db
-import           Database.Persist.Types (Entity, entityVal)
+import           Models
 
-import Models
-import Api.Aircraft
-import Ios
+import           Api.Aircraft
+import           Ios
+import           Models
 
 io1 :: IO ()
 io1 = do
@@ -58,9 +62,9 @@ io1 = do
     let
       m1 = Model "m1Code" "m1Name" 2 "m1OrdId"
       ac1 = Aircraft "SN1" $ toSqlKey 1
-      
+
     pool <- makePool Localhost
-      
+
     flip runSqlPool pool $ do
       Db.deleteAllAircraft
       nAc <- Db.countAircraft
@@ -70,7 +74,7 @@ io1 = do
       liftIO $ putStrLn $ "id1: " ++ show id1
       nAc <- Db.countAircraft
       liftIO $ putStrLn $ "nAc: " ++ show nAc
-      (acs :: [Entity Aircraft]) <- Db.getAllAircrafts 
+      (acs :: [Entity Aircraft]) <- Db.getAllAircrafts
       let ac2 = entityVal $ head $ acs :: Aircraft
 
       when (ac2 /= ac1) $ do
@@ -84,9 +88,9 @@ io1a = do
     let
       m1 = Model "m1Code" "m1Name" 2 "m1OrdId"
       ac1 = Aircraft "SN1" $ toSqlKey 1
-      
+
     pool <- makePool Localhost
-      
+
     flip runSqlPool pool $ do
       deleteWhere ([] :: [Filter Aircraft])
       deleteWhere ([] :: [Filter Model])
@@ -106,7 +110,7 @@ io1a = do
       liftIO $ assert (ac1 == ac2) $ return ()
 
 
-
+{-
 io2 :: IO ()
 io2 = do
   mgr <- newManager defaultManagerSettings
@@ -121,10 +125,28 @@ io2 = do
   eAcs <- getAllAircraftsIO mgr bu
 
   case eAcs of
-    Left err -> putStrLn $ "Error: " ++ show err
+    Left err  -> putStrLn $ "Error: " ++ show err
     Right acs -> putStrLn $ "acs: " ++ show acs
 
   void $ deleteAllAircraftIO mgr bu
+-}
+
+io2 :: IO ()
+io2 = do
+  mgr <- newManager defaultManagerSettings
+  port <- readPort
+  let
+    bu = BaseUrl Http "localhost" port ""
+    m1 = Model "m1Code" "m1Name" 2 "m1OrdId"
+    ac1 = Aircraft "SN1" $ toSqlKey 1
+    ac2 = Aircraft "SN2" $ toSqlKey 2
+    clientEnv = ClientEnv mgr bu
+
+  void $ flip runClientM clientEnv $ do
+    mapM_ postAircraft [ac1, ac2]
+    acs <- getAllAircrafts
+    mapM_ (\ac -> liftIO $ putStrLn $ "ac: " ++ show ac) acs
+    void $ deleteAllAircrafts
 
 {-
 io3 :: IO ()
@@ -134,14 +156,16 @@ io3 = do
   void $ wait x1
 -}
 
+
 io3 :: IO ()
 io3 = do
   tid <- forkIO Ios.runService
   threadDelay 100000
   io2
   killThread tid
-  
-  
+
+
+
 
 --getAllAircraftsQuery :: ClientM [Entity Aircraft]
 --getAllAircraftsQuery = getAllAircrafts

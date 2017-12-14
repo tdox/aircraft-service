@@ -16,11 +16,12 @@ import           Servant      {-               ((:<|>)((:<|>)), (:~>)(Nat)
                                              , ServantErr, enter, serve
                                              , serveDirectory) -}
 
-import           Config                      (App (..), Config (..))
+import           Config                      (AppT(..), App(..), Config (..))
 import           Models
 
 import           Api.Aircraft (AircraftAPI, aircraftServer)
 import           Api.Model (ModelAPI, modelServer)
+import           Control.Category     ((<<<), (>>>))
 
 type AppAPI = AircraftAPI :<|> ModelAPI
 
@@ -37,22 +38,26 @@ appServer = aircraftServer :<|> modelServer
 -- | This functions tells Servant how to run the 'App' monad with our
 -- 'server' function.
 appToServer :: Config -> Server AppAPI -- AircraftAPI
-appToServer cfg = enter (convertApp cfg) appServer -- (aircraftServer :<|> modelServer)
+--appToServer cfg = enter (convertApp cfg) appServer -- (aircraftServer :<|> modelServer)
+appToServer cfg = enter (convertApp cfg >>> NT Handler) appServer -- (aircraftServer :<|> modelServer)
 
 -- | This function converts our 'App' monad into the @ExceptT ServantErr
 -- IO@ monad that Servant's 'enter' function needs in order to run the
 -- application. The ':~>' type is a natural transformation, or, in
 -- non-category theory terms, a function that converts two type
 -- constructors without looking at the values in the types.
-convertApp :: Config -> App :~> ExceptT ServantErr IO
-convertApp cfg = Nat (flip runReaderT cfg . runApp)
+-- convertApp :: Config -> App :~> ExceptT ServantErr IO
+convertApp :: Config -> AppT IO :~> ExceptT ServantErr IO
+convertApp cfg = runReaderTNat cfg <<< NT runApp
+-- convertApp cfg = Nat (flip runReaderT cfg . runApp)
 
 -- | Since we also want to provide a minimal front end, we need to give
 -- Servant a way to serve a directory with HTML and JavaScript. This
 -- function creates a WAI application that just serves the files out of the
 -- given directory.
-files :: Application
-files = serveDirectory "assets"
+files :: Server Raw -- Application
+files = serveDirectoryFileServer "assets"
+-- files = serveDirectory "assets"
 
 -- | Just like a normal API type, we can use the ':<|>' combinator to unify
 -- two different APIs and applications. This is a powerful tool for code

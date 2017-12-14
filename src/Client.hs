@@ -41,47 +41,64 @@ import Api.Model (ModelAPI)
 aircraftAPI :: Proxy AircraftAPI
 aircraftAPI = Proxy
 
-getAllAircrafts ::             Manager -> BaseUrl -> ClientM [Entity Aircraft]
-getAircraft     :: Int64    -> Manager -> BaseUrl -> ClientM Aircraft
+--getAllAircrafts ::             Manager -> BaseUrl -> ClientM [Entity Aircraft]
+getAllAircrafts ::             ClientM [Entity Aircraft]
 
-postAircraft    :: Aircraft -> Manager -> BaseUrl
-                -> ExceptT ServantError IO Int64
+
+getAircraft     :: {-Manager -> BaseUrl -> -} Int64   -> ClientM Aircraft
+
+
+postAircraft    :: {- Manager -> BaseUrl -> -} Aircraft -> ClientM Int64
+--                -> ExceptT ServantError IO Int64
                 
-deleteAllAircrafts :: Manager -> BaseUrl -> ClientM NoContent
+deleteAllAircrafts :: {- Manager -> BaseUrl -> -} ClientM NoContent
+
 
 
 getAllAircrafts :<|> getAircraft :<|> postAircraft :<|> deleteAllAircrafts =
   client aircraftAPI
 
 
+
+{-
 getAllAircraftsIO :: Manager
                   -> BaseUrl
-                  -> IO (Either ServantError [Entity Aircraft])
+                  -> ClientM [Entity Aircraft]
+--                  -> IO (Either ServantError [Entity Aircraft])
                   
-getAllAircraftsIO mgr bu = runExceptT $ getAllAircrafts mgr bu
+getAllAircraftsIO mgr bu = getAllAircrafts mgr bu
+--getAllAircraftsIO mgr bu = runExceptT $ getAllAircrafts mgr bu
 
 
 getAircraftIO :: Manager -> BaseUrl -> Int64
-              -> IO (Either ServantError Aircraft)
+              -> ClientM Aircraft
+--              -> IO (Either ServantError Aircraft)
               
-getAircraftIO mgr bu iD = runExceptT $ getAircraft iD mgr bu
+getAircraftIO mgr bu iD = getAircraft iD mgr bu
+--getAircraftIO mgr bu iD = runExceptT $ getAircraft iD mgr bu
 
 
 postAircraftIO :: Manager -> BaseUrl -> Aircraft
-               -> IO (Either ServantError Int64)
+               -> ClientM Int64
+--               -> IO (Either ServantError Int64)
                
-postAircraftIO m b ac = runExceptT $ postAircraft ac m b
+postAircraftIO m b ac = postAircraft ac m b
+--postAircraftIO m b ac = runExceptT $ postAircraft ac m b
 
-deleteAllAircraftIO :: Manager -> BaseUrl -> IO (Either ServantError NoContent)
-deleteAllAircraftIO m b = runExceptT $ deleteAllAircrafts m b
+--deleteAllAircraftIO :: Manager -> BaseUrl -> IO (Either ServantError NoContent)
+deleteAllAircraftIO :: Manager -> BaseUrl -> ClientM NoContent
+deleteAllAircraftIO m b = deleteAllAircrafts m b
+--deleteAllAircraftIO m b = runExceptT $ deleteAllAircrafts m b
+-}
 
 --------------------------------------------------------------------------------
 
-data ClientEnv = ClientEnv Manager BaseUrl
-type Client = ReaderT ClientEnv IO
+-- data ClientEnv = ClientEnv Manager BaseUrl
+-- type Client = ReaderT ClientEnv IO
 
 --------------------------------------------------------------------------------
 
+{-
 getAllAircraftsC :: Client (Either ServantError [Entity Aircraft])
 getAllAircraftsC = do
   ClientEnv m b <- ask
@@ -101,10 +118,11 @@ postAircraftC ac = do
 deleteAllAircraftC :: Client (Either ServantError NoContent)
 deleteAllAircraftC = do
   ClientEnv m b <- ask
-  liftIO $ runExceptT $ deleteAllModels m b
-
+  liftIO $ runExceptT $ deleteAllAircrafts m b
+-}
 --------------------------------------------------------------------------------
 
+{-
 modelAPI :: Proxy ModelAPI
 modelAPI = Proxy
 
@@ -140,3 +158,4 @@ deleteAllModelsC :: Client (Either ServantError NoContent)
 deleteAllModelsC = do
   ClientEnv m b <- ask
   liftIO $ runExceptT $ deleteAllModels m b
+-}

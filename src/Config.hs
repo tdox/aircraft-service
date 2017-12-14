@@ -1,6 +1,8 @@
+{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings          #-}
+
 
 module Config where
 
@@ -41,11 +43,13 @@ import Data.Text (Text)
 --
 -- By encapsulating the effects in our newtype, we can add layers to the
 -- monad stack without having to modify code that uses the current layout.
-newtype App a
-    = App
-    { runApp :: ReaderT Config (ExceptT ServantErr IO) a
+newtype AppT m a 
+    = AppT
+    { runApp :: ReaderT Config (ExceptT ServantErr m) a
     } deriving ( Functor, Applicative, Monad, MonadReader Config,
                  MonadError ServantErr, MonadIO)
+type App = AppT IO
+
 type Port = Int
 
 data ServerConfig = ServerConfig { env :: Text

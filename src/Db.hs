@@ -18,6 +18,7 @@ import           Control.Monad.Reader (MonadIO, MonadReader, ReaderT, asks
                                       , liftIO
                                       , runReaderT)
 
+
 import Control.Monad.Reader.Class (ask)
                  
 import           Data.Aeson           (FromJSON, ToJSON)
@@ -38,7 +39,7 @@ import           Database.Persist.Postgresql          (ConnectionPool,
                  
 import Database.Persist.Types (Filter)
                  
-import           GHC.Generics         (Generic)
+-- import           GHC.Generics ()      --  (Generic)
 
 import           Config               (Config, Environment(..), getPool
                                       , makePool)
